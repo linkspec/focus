@@ -3,19 +3,19 @@
 session_start();
 
 // The base URL of your application
-$baseurl = 'https://dev-focus.futcher.org.uk';
+$baseurl = '';
 $callbackUri = $baseurl . "/callback.php";
 
 // Databse connection variables
-$databaseHost = 'localhost';
-$database = 'focus';
-$databaseUsername = 'focus';
-$databasePassword = 'RplgiWY9TciaYqH1Ee35';
+$databaseHost = '';
+$database = '';
+$databaseUsername = '';
+$databasePassword = '';
 define('dbPrefix', '');
 
 // Google auth variables
-$client_id = '429157958080-au1mf0vl522djnk1h4n9s80ts993j9ed.apps.googleusercontent.com';
-$client_secret = 'nD82VAOZAg91fSD98O7S6tqf';
+$client_id = '';
+$client_secret = '';
 
 /**
 * Creates and returns a new mysqli object
