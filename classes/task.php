@@ -203,6 +203,8 @@ class task
      */
     public function listTasks($itemsPerPage, $page, $orderby='id', $order='DESC')
     {
+
+        $returnArray = array();
         $db = newMysqliObject();
 
         // First calculate how many results to fetch to show the correct page. We will require enough to disregard $count*pages

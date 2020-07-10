@@ -44,6 +44,7 @@ class blocker
     public function getBlockers()
     {
        
+        $returnArray=array();
         // Check the user is logged in
         $user = new user();
         if(!$user->isGoogleAuthed())
