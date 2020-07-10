@@ -69,9 +69,9 @@ if(isset($_GET['action']))
      {
         $task = new task();
         $createTask = $task->newTask($_GET['newTaskName']);
-        if($createTask == false)
+        if($createTask['status'] == false)
         {
-            echo json_encode("error");
+            echo json_encode($createTask['result']);
         }
         else
         {

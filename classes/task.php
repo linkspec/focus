@@ -121,7 +121,15 @@ class task
             $stmtCreateTask = $db->prepare("INSERT INTO " . dbPrefix . "tasks (`name`,`createdate`,`lastupdatedate`,`status`,`priority`,`owner`) VALUES (?,?,?,'1','2',?)");
             $stmtCreateTask->bind_param("ssss", $name, $currTime, $currTime, $googleAuth_id);
             $stmtCreateTask->execute();
-            $db->close();
+
+
+            // Check we create a task
+            if($stmtCreateTask->insert_id)
+            {
+                $returnArray['status']=false;
+                $returnArray['result']=$stmtCreateTask->error;
+                return $returnArray;
+            }
 
             // Set the object properties
             $this->setid($stmtCreateTask->insert_id);
