@@ -124,7 +124,7 @@ class task
 
 
             // Check we create a task
-            if($stmtCreateTask->insert_id)
+            if($stmtCreateTask->error)
             {
                 $returnArray['status']=false;
                 $returnArray['result']=$stmtCreateTask->error;
