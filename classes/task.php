@@ -96,7 +96,9 @@ class task
     */
     public function newTask($name)
     {
-        // Check the object does not already have a task accosiated with it
+
+        $returnArray = array();
+        // Check the object does not already have a task associated with it
         if (empty($this->taskid)) {
             $db = newMysqliObject();
            
@@ -107,11 +109,12 @@ class task
             $user = new user();
             
             $googleAuth_id = $user->getGoogleAuthId();
-
+           
             if(!$googleAuth_id){
                 // User not logged in, do not proceed
-                
-                return false;
+                $returnArray['status']=false;
+                $returnArray['result']="User is not logged in";
+                return $returnArray;
             }
             
             // Create the new task in the database
@@ -126,9 +129,14 @@ class task
             $this->lastupdatedate = $currTime;
             $this->status = '1';
 
-            return $stmtCreateTask->insert_id;
+            $returnArray['status']=true;
+            $returnArray['result']=$stmtCreateTask->insert_id;
+            return $returnArray;
+           
         } else {
-            return false;
+            $returnArray['status']=false;
+                $returnArray['result']="No task ID set";
+                return $returnArray;
         }
     }
 
