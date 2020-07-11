@@ -419,8 +419,9 @@ function newTaskBoxTextChange(taskName, key)
             }
             else
             {
-                var newTask = new Task(newTaskReturn);
+                var newTask = new Task(newTaskReturn.result);
                 newTask.addTask();
+                $("#newTaskTextBox").val("");
             }
         });
 
