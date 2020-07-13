@@ -23,6 +23,7 @@ echo 'Created table task_blocker_map<br>';
 /* Add the columns to tasks */
 modifyColumn('tasks', 'name', 'text', 'NULL', '', '', '');
 modifyColumn('tasks', 'description', 'text', 'NULL', '', '', '');
+modifyColumn('tasks', 'notes', 'text', 'NULL', '', '', '');
 modifyColumn('tasks', 'createdate', 'INT(11)', 'NULL', '', '', '');
 modifyColumn('tasks', 'lastupdatedate', 'INT(11)', 'NULL', '', '', '');
 modifyColumn('tasks', 'deadline', 'INT(11)', 'NULL', '', '', '');
