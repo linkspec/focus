@@ -84,6 +84,28 @@ function cancelBlockerDelete(event)
     bindHandlers();
 }
 
+function addNewBlocker(blockerName)
+{
+     
+     fetch('api/blocker/?action=newBlocker&newBlockerName=' + blockerName)
+     .then((resp) => resp.json())
+     .then(function(returnJson) {
+        if(returnJson.error == false)
+        {
+        // Success, close the modal and rebuild page
+         $('#blockerEditModal').modal('hide')
+
+         // Run a rebuild to update everything
+         reBuildPage();
+        }
+        else
+        {
+            // Failure, show warning
+            displayError("danger", "Sorry, there was an error adding this blocker, please try again");
+        }
+     });    
+}
+
 //--------------------------------------------------------------------------
 // The class is for individual blockers
 //--------------------------------------------------------------------------

@@ -32,6 +32,9 @@ function reBuildPage()
                 })
                 blockerHTML = blockerHTML + '</div>' + 
                     '</form>';
+
+
+                
                 
                 // Change the class for use in the main menu
                 //mainMenublockerCheckBoxReplaced = blockerHTML.replace(/blockerCheckBox/g, "mainMenublockerCheckBox");
@@ -171,7 +174,23 @@ function bindHandlers()
            //mainMenuBlockerChange(clickEvent);
        })
    
+       
+       // Bind the to the new blocker text box
+       $("#addNewBlocker").off();
+       // Block the normal submit routine
+       $( "#addNewBlocker" ).submit(function( event ) {
+           event.preventDefault();
+         });
+       $("#addNewBlocker").keyup(function(keyEvent){
+        if ( keyEvent.which == 13 ) {
+            
+            // Save the new blocker to the database
+            addNewBlocker(document.getElementById('addNewBlocker').value);
+            //saveTaskName(targetid, targetElement, document.getElementById('taskNameEdit' + targetid));
 
+         }
+           
+       });
       
 }
 

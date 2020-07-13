@@ -107,6 +107,13 @@ $authed = $user->isGoogleAuthed();
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="editBlockersModalSave">Save changes</button>
       </div>
+
+      <div class="modal-body" id="blockerEditModalSecondBody">
+        
+                <label class="form-check-label" for="addNewBlocker">Add a new blocker</label>
+                <input type="text" id="addNewBlocker">
+
+      </div>
     </div>
   </div>
 </div>
