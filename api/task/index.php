@@ -42,6 +42,9 @@ if(isset($_GET['action']))
          $task->setid($_GET['taskid']);
          $result['name'] = $task->name();
          $result['blockers'] = $task->getTaskBlockers();
+         $result['description'] = $task->getTaskDescription();
+         $result['notes'] = $task->getTaskNotes();
+
          print_r(json_encode($result));
      }
 
@@ -85,6 +88,24 @@ if(isset($_GET['action']))
         $task = new task();
         $task->setid($_GET['id']);
         $task->markComplete();
+     }
+
+     // Update the notes entry for the task
+     if($_GET['action'] == 'updateNote')
+     {
+        $task = new task();
+        $task->setid($_GET['taskid']);
+        $result['status'] = $task->updateNote($_GET['newNote']);
+        echo json_encode($result);
+     }
+     
+     // Update the notes entry for the task
+     if($_GET['action'] == 'updateDescription')
+     {
+        $task = new task();
+        $task->setid($_GET['taskid']);
+        $result['status'] = $task->updateDescription($_GET['newDescription']);
+        echo json_encode($result);
      }
      
 

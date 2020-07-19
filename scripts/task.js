@@ -1,6 +1,8 @@
 class Task {
     constructor(id) {
         this.id = id;
+        this.description;
+        this.notes;
         this.blockers = [];
         this.promises = [];
     }
@@ -39,33 +41,26 @@ class Task {
 
     taskNameClicked()
     {
-        //alert("#nameCol"+clickEvent);
-        // Replace the name field with a text input, containing
-        //var targetid = clickEvent.target.id.replace("nameCol","");
-        self = this;
-        var targetElement = document.getElementById("nameCol"+this.id)
-        var originalTaskName = targetElement.innerHTML;
-        targetElement.innerHTML = '<input type="text" value="' + originalTaskName + '" id="taskNameEdit' + this.id + '"></input>';
-        
-        // Register handlers for this box being submitted or clicked off of
-        $("#taskNameEdit" + this.id).keyup(function(keyEvent){
-            if ( keyEvent.which == 13 ) {
-                
-                // Save the new value to the database
-                self.saveTaskName(targetElement, document.getElementById('taskNameEdit' + self.id));
+        var parent = this;
+        // Edit the modal with this tasks information
+        //Set title to name of task
+        document.getElementById("taskEditModalTitle").innerHTML = this.name;
+        document.getElementById("taskEditModalDescription").innerHTML = this.description;
+        document.getElementById("taskEditModalNotes").innerHTML = this.notes;
 
-                // Unbind the listners now its been used
-                $("#taskNameEdit" + this.id).off();
-            }
-            if ( keyEvent.which == 27 ) {
-                targetElement.innerHTML = originalTaskName;
-                
-                // Unbind the listners now its been used
-                $("#taskNameEdit" + self.id).off();
+        // Open the task modal    
+        $('#taskEditModal').modal('show')
+
+        // Add a handler for the close/save buttons being pressed
+        $("#editTaskModalSave").click(function(){
             
-            
-            }
+            // Save the updated form fields
+            console.log(parent);
+            parent.updateNote(document.getElementById("taskEditModalNotes").value);
+            parent.updateDescription(document.getElementById("taskEditModalDescription").value);
+
         });
+        
     }
 
     // When the task name has been changed, fetch the new name, save to database and update the name field
@@ -256,9 +251,13 @@ class Task {
                 fetch('api/task/?action=taskInfo&taskid=' + self.id) // Call the fetch function passing the url of the API as a parameter
                 .then((resp) => resp.json())
                 .then(function(info) {
+
+                    console.log(info);
                     var element = document.getElementById("nameCol"+self.id);
                     element.innerHTML = info.name;
                     self.name = info.name;
+                    self.description = info.description;
+                    self.notes = info.notes;
                     
                     // Check if any blockers are defined
                     if ( info.blockers !== null) {
@@ -302,16 +301,35 @@ class Task {
     }
 
     
-
-    sampleFunction()
+    // Creates or updates the note section attached to this task
+    updateNote(note)
     {
-        var self = this;
-        return new Promise(function(resolve, reject)
+        console.log(this.id);
+        fetch('api/task/?action=updateNote&newNote=' + note + '&taskid=' + this.id) // Call the fetch function passing the url of the API as a parameter
+        .then((resp) => resp.json())
+        .then(function(info) {
+            if(info.status != true)
             {
-                // Function actions go here
+                displayError("danger", "There was an error saving this tasks new note, please try again");
+            }
 
-               resolve(); 
-            });
+        });
+    }
+
+
+    // Creates or updates the description section attached to this task
+    updateDescription(description)
+    {
+        console.log("Description");
+        fetch('api/task/?action=updateDescription&newDescription=' + description + '&taskid=' + this.id) // Call the fetch function passing the url of the API as a parameter
+        .then((resp) => resp.json())
+        .then(function(info) {
+            if(info.status != true)
+            {
+                displayError("danger", "There was an error saving this tasks new description, please try again");
+            }
+
+        });
     }
 
 

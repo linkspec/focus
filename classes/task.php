@@ -157,13 +157,14 @@ class task
     {
         $db = newMysqliObject();
 
-        $stmtFetchProperties = $db->prepare("SELECT `name`,`description`,`createdate`,`lastupdatedate`,`deadline`,`leadtime`,`status`,`priority`,`owner` FROM " . dbPrefix . "tasks WHERE id = ? LIMIT 1");
+        $stmtFetchProperties = $db->prepare("SELECT `name`,`description`,`notes`,`createdate`,`lastupdatedate`,`deadline`,`leadtime`,`status`,`priority`,`owner` FROM " . dbPrefix . "tasks WHERE id = ? LIMIT 1");
         $stmtFetchProperties->bind_param("i", $this->taskid);
         $stmtFetchProperties->execute();
-        $stmtFetchProperties->bind_result($name, $description, $createdate, $lastupdatedate, $deadline, $leadtime, $status, $priority, $owner);
+        $stmtFetchProperties->bind_result($name, $description, $notes, $createdate, $lastupdatedate, $deadline, $leadtime, $status, $priority, $owner);
         while ($stmtFetchProperties->fetch()) {
             $this->name = $name;
             $this->description = $description;
+            $this->notes = $notes;
             $this->createdate = $createdate;
             $this->lastupdatedate = $lastupdatedate;
             $this->deadLine = $deadline;
@@ -290,6 +291,50 @@ class task
         $stmtSetTaskStatus->bind_param("i", $taskid);
         $stmtSetTaskStatus->execute();
         return $true;
+    }
+
+    /**
+     * * Updates the note on this task
+     */
+    public function updateNote($newNote)
+    {
+        $db = newMysqliObject();
+        
+        $taskid = $this->taskid;
+        $stmtSetNote = $db->prepare("UPDATE " . dbPrefix . "tasks SET `notes` = ? WHERE `id` = ?");
+        $stmtSetNote->bind_param("si", $newNote, $taskid);
+        $stmtSetNote->execute();
+        return true;
+    }
+
+    /**
+     * * Updates the description on this task
+     */
+    public function updateDescription($newDescription)
+    {
+        $db = newMysqliObject();
+        
+        $taskid = $this->taskid;
+        $stmtSetDescription = $db->prepare("UPDATE " . dbPrefix . "tasks SET `description` = ? WHERE `id` = ?");
+        $stmtSetDescription->bind_param("si", $newDescription, $taskid);
+        $stmtSetDescription->execute();
+        return true;
+    }
+
+    /**
+     * * Get the tasks description
+     */
+    public function getTaskDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * * Get the tasks notes
+     */
+    public function getTaskNotes()
+    {
+        return $this->notes;
     }
 
 }
