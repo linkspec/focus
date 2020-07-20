@@ -39,6 +39,7 @@ class Task {
 
     }
 
+    // When a task is clicked on, this function will build and display the modal that allows the user to edit that specific tasks details
     taskNameClicked()
     {
         var parent = this;
@@ -47,6 +48,43 @@ class Task {
         document.getElementById("taskEditModalTitle").innerHTML = this.name;
         document.getElementById("taskEditModalDescription").innerHTML = this.description;
         document.getElementById("taskEditModalNotes").innerHTML = this.notes;
+        
+        // Update the blockers information for this task
+        // First fetch a list of all blockers
+        const getRequirementsList = getAllRequirements();
+        getRequirementsList.then(function(result){
+            // Update the modal with the current list of requirements
+            var newRequirementList = '';
+            // Create a blank area to start with
+            document.getElementById("taskEditModalRequirements").innerHTML = "";
+            // Now loop through the requirements adding each in turn
+            result.forEach(requirement => {
+                
+                // Create a new form group for this 'requirement' to live in
+                var newFormgroup = document.createElement('div');
+                newFormgroup.id = "requirementsFormGroup" + requirement.id;
+                newFormgroup.className = "form-group";
+                document.getElementById("taskEditModalRequirements").appendChild(newFormgroup); // Append the form group to #taskEditModalRequirements on the main page
+                
+                // Create a new checkbox in that form group
+                var newRequirementsCheckbox = document.createElement('input');
+                newRequirementsCheckbox.id = "requriementsCheckbox"+requirement.id;
+                newRequirementsCheckbox.className = "form-check-input";
+                newRequirementsCheckbox.type = "checkbox";
+                newRequirementsCheckbox.checked = parent.blockers[requirement.id]; // Check/Uncheck the checkbox as appropraite for this task
+                document.getElementById("requirementsFormGroup" + requirement.id).appendChild(newRequirementsCheckbox); // Append it to the form group created above
+
+                // Add a label for the check box
+                var newRequirementsCheckboxLabel = document.createElement('label');
+                newRequirementsCheckboxLabel.htmlFor = "requriementsCheckbox"+requirement.id;
+                newRequirementsCheckboxLabel.innerHTML = requirement.name;
+                newRequirementsCheckboxLabel.className = "form-check-label";
+                document.getElementById("requirementsFormGroup" + requirement.id).appendChild(newRequirementsCheckboxLabel); // Append it to the form group created above
+               
+            });
+
+        });
+        
 
         // Open the task modal    
         $('#taskEditModal').modal('show')
@@ -55,7 +93,6 @@ class Task {
         $("#editTaskModalSave").click(function(){
             
             // Save the updated form fields
-            console.log(parent);
             parent.updateNote(document.getElementById("taskEditModalNotes").value);
             parent.updateDescription(document.getElementById("taskEditModalDescription").value);
 
@@ -252,7 +289,6 @@ class Task {
                 .then((resp) => resp.json())
                 .then(function(info) {
 
-                    console.log(info);
                     var element = document.getElementById("nameCol"+self.id);
                     element.innerHTML = info.name;
                     self.name = info.name;
@@ -265,7 +301,6 @@ class Task {
                         // Loop through the blockers that were returned for this task
                         info.blockers.forEach(function(blocker){
                            self.promises.push = self.updateBlockerCheckBoxes(blocker);
-                            
                         });
                                           
 
@@ -304,7 +339,6 @@ class Task {
     // Creates or updates the note section attached to this task
     updateNote(note)
     {
-        console.log(this.id);
         fetch('api/task/?action=updateNote&newNote=' + note + '&taskid=' + this.id) // Call the fetch function passing the url of the API as a parameter
         .then((resp) => resp.json())
         .then(function(info) {
@@ -320,7 +354,7 @@ class Task {
     // Creates or updates the description section attached to this task
     updateDescription(description)
     {
-        console.log("Description");
+
         fetch('api/task/?action=updateDescription&newDescription=' + description + '&taskid=' + this.id) // Call the fetch function passing the url of the API as a parameter
         .then((resp) => resp.json())
         .then(function(info) {

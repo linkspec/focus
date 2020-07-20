@@ -77,9 +77,6 @@ function bindClickHandlerToAll()
         //$("#" + clickEvent.target.id).unbind('click');
         
         // Call the appropraite object to handle the action
-        console.log(taskObjectArray);
-        console.log(clickEvent.target.id.replace("nameCol", ""));
-        console.log(taskObjectArray[clickEvent.target.id.replace("nameCol", "")]);
         taskObjectArray[clickEvent.target.id.replace("nameCol", "")].taskNameClicked();       
     });
 }

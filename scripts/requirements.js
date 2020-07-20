@@ -27,6 +27,21 @@ function editBlockersModalSave()
             });
 }
 
+// Fetches a list of all current requirements
+function getAllRequirements()
+{
+    const promise = new Promise(function(resolve, reject){
+        fetch('api/blocker/?action=blockerList')
+        .then((resp) => resp.json())
+        .then(function(returnJson) {
+            resolve(returnJson);
+        });
+    });
+    
+    return promise;
+    
+   
+}
 
 // Adds a line to the blocker modal if it does not already exist
 function addLineToBlockerEditModal(id, name)

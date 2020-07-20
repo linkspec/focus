@@ -26,7 +26,7 @@ $authed = $user->isGoogleAuthed();
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic.min.css" integrity="sha256-CfN2r6i/dqkUHVRqpBzO3w21SnIWalwGfj5ScBPVzmI=" crossorigin="anonymous" />
 <script src="scripts/task.js"></script>
-<script src="scripts/blocker.js"></script>
+<script src="scripts/requirements.js"></script>
 <script src="scripts/ui.js"></script>
 
 
@@ -66,7 +66,7 @@ $authed = $user->isGoogleAuthed();
      
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Blockers
+          Requirements
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown" id="mainBlockerDropDown"></div>
       </li>
@@ -138,14 +138,19 @@ $authed = $user->isGoogleAuthed();
           <textarea class="form-control" id="taskEditModalNotes" rows="3"></textarea>
         </div>
 
+
+        <div class="form-check" id="taskEditModalRequirements">
+        
+      </div>
+
         <div class="form-group">
-          <label for="taskEditModalBlockers">Blockers</label>
-          <textarea class="form-control" id="taskEditModalBlockers" rows="3"></textarea>
+          <label for="taskEditModalBlockingTasks">Required tasks</label>
+          <textarea class="form-control" id="taskEditModalBlockingTasks" rows="3"></textarea>
         </div>
 
         <div class="form-group">
-          <label for="taskEditModalBlockingTasks">Blocking tasks</label>
-          <textarea class="form-control" id="taskEditModalBlockingTasks" rows="3"></textarea>
+          <label for="taskEditModalTimeRequired">Time required</label>
+          <textarea class="form-control" id="taskEditModalTimeRequired" rows="3"></textarea>
         </div>
 
       </div>
