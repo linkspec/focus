@@ -36,6 +36,7 @@ class Task {
         this.blockers = [];
         this.promises = [];
         this.requireTasks = [];
+        this.timeRequired;
     }
 
     alertId()
@@ -120,7 +121,7 @@ class Task {
         // Get a list of all active tasks
         const getUsersActiveTasksList = listUsersActiveTasks();
         getUsersActiveTasksList.then(function(tasks){
-            document.getElementById("taskEditModalRequiredTasks").innerHTML = "<b>Required tasks</b>";
+            document.getElementById("taskEditModalRequiredTasks").innerHTML = "<b>Prerequisite tasks</b>";
             tasks.forEach(taskid => {
                 // Don't show task under its own list
                 if(taskid != parent.id)
@@ -148,7 +149,8 @@ class Task {
             });
         });
 
-        
+        // ## Update the 'time required' setting on the modal
+        document.getElementById("taskEditModalTimeRequired").value = parent.timeRequired;
 
 
         // Open the task modal    
@@ -164,6 +166,7 @@ class Task {
             // Save the updated requirements
             parent.updateRequirements();
             parent.updateRequiredTasks();
+            parent.updateRequiredTime();
 
 
             $('#taskEditModal').modal('hide')
@@ -365,6 +368,7 @@ class Task {
                     self.name = info.name;
                     self.description = info.description;
                     self.notes = info.notes;
+                    self.timeRequired = info.timeRequired;
                 
                     
                     // Check if any blockers are defined
@@ -506,5 +510,13 @@ class Task {
         });
     }
 
+
+    updateRequiredTime()
+    {
+        this.timeRequired = document.getElementById("taskEditModalTimeRequired").value;
+        fetch('api/task/?action=updateRequiredTime&taskid=' + this.id + '&requiredtime=' + document.getElementById("taskEditModalTimeRequired").value) // Request backend to update the required time of this task
+        
+    }
+    
 
 }

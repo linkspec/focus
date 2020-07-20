@@ -54,6 +54,11 @@ class task
     private $status;
 
     /**
+     * @var int $timeRequired The number of minutes required to complete this task
+     */
+    private $timeRequired;
+
+    /**
     * Sets the task id for this object
     * @param int SQL id this task object represents
     * @return bool True if successul, false if unsuccessful
@@ -157,10 +162,10 @@ class task
     {
         $db = newMysqliObject();
 
-        $stmtFetchProperties = $db->prepare("SELECT `name`,`description`,`notes`,`createdate`,`lastupdatedate`,`deadline`,`leadtime`,`status`,`priority`,`owner` FROM " . dbPrefix . "tasks WHERE id = ? LIMIT 1");
+        $stmtFetchProperties = $db->prepare("SELECT `name`,`description`,`notes`,`createdate`,`lastupdatedate`,`deadline`,`leadtime`,`status`,`priority`,`owner`,`timerequired` FROM " . dbPrefix . "tasks WHERE id = ? LIMIT 1");
         $stmtFetchProperties->bind_param("i", $this->taskid);
         $stmtFetchProperties->execute();
-        $stmtFetchProperties->bind_result($name, $description, $notes, $createdate, $lastupdatedate, $deadline, $leadtime, $status, $priority, $owner);
+        $stmtFetchProperties->bind_result($name, $description, $notes, $createdate, $lastupdatedate, $deadline, $leadtime, $status, $priority, $owner, $time);
         while ($stmtFetchProperties->fetch()) {
             $this->name = $name;
             $this->description = $description;
@@ -172,6 +177,7 @@ class task
             $this->status = $status;
             $this->priority = $priority;
             $this->owner = $owner;
+            $this->timeRequired = $time;
         }
 
         $db->close();
@@ -394,7 +400,7 @@ class task
     }
 
     /**
-     * Add one task as a requirement of another
+     * Get the required sub tasks of this task
      */
     public function getrequiredTasks()
     {
@@ -421,6 +427,29 @@ class task
 
     }
 
+    /**
+     * Get the number of minutes required to execute this task
+     */
+    public function getTimeRequired()
+    {
+   
+        return $this->timeRequired;
+
+    }
+
+    /**
+     * Update the required time on this task
+     */
+    public function updateRequiredTime($requiredTime)
+    {
+        $db = newMysqliObject();
+        
+        $taskid = $this->taskid;
+        $stmtSetRequiredTime = $db->prepare("UPDATE " . dbPrefix . "tasks SET `timerequired` = ? WHERE `id` = ?");
+        $stmtSetRequiredTime->bind_param("si", $requiredTime, $taskid);
+        $stmtSetRequiredTime->execute();
+        return true;
+    }
 
     
 }

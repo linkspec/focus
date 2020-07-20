@@ -45,6 +45,7 @@ if(isset($_GET['action']))
          $result['description'] = $task->getTaskDescription();
          $result['notes'] = $task->getTaskNotes();
          $result['requiredTasks'] = $task->getrequiredTasks();
+         $result['timeRequired'] = $task->getTimeRequired();
 
          print_r(json_encode($result));
      }
@@ -136,6 +137,17 @@ if(isset($_GET['action']))
         echo json_encode($result);
     }
 
+    // Lists required tasks for this task
+    if($_GET['action'] == 'updateRequiredTime')
+    {
+        $task = new task();
+        $task->setid($_GET['taskid']);
+        $result = $task->updateRequiredTime($_GET['requiredtime']);
+        echo json_encode($result);
+    }
+
+
+    
 }
 else
 {

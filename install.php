@@ -21,8 +21,7 @@ $db->query("CREATE TABLE IF NOT EXISTS " . dbPrefix . "task_blocker_map (id INT(
 echo 'Created table task_blocker_map<br>';
 $db->query("CREATE TABLE IF NOT EXISTS " . dbPrefix . "task_task_map (id INT(10) AUTO_INCREMENT PRIMARY KEY)");
 echo 'Created table task_blocker_map<br>';
-$db->query("CREATE TABLE IF NOT EXISTS " . dbPrefix . "task_time_blocker (id INT(10) AUTO_INCREMENT PRIMARY KEY)");
-echo 'Created table task_blocker_map<br>';
+
 
 /* Add the columns to tasks */
 modifyColumn('tasks', 'name', 'text', 'NULL', '', '', '');
@@ -35,6 +34,7 @@ modifyColumn('tasks', 'leadtime', 'INT(11)', 'NULL', '', '', '');
 modifyColumn('tasks', 'status', 'int', 'NOT NULL', '', '', '');
 modifyColumn('tasks', 'priority', 'int', 'NOT NULL', '', '', '');
 modifyColumn('tasks', 'owner', 'varchar(30)', 'NOT NULL', '', '', '');
+modifyColumn('tasks', 'timerequired', 'INT(12)', 'NULL', '', '', '');
 
 
 /* Add the columns to users */
@@ -54,11 +54,6 @@ modifyColumn('task_blocker_map', 'blocker_definition_id', 'INT(10)', 'NOT NULL',
 modifyColumn('task_task_map', 'ownerid', 'INT(10)', 'NOT NULL', '', '', '');
 modifyColumn('task_task_map', 'owningtask', 'INT(10)', 'NOT NULL', '', '', '');
 modifyColumn('task_task_map', 'requiredtask', 'INT(10)', 'NOT NULL', '', '', '');
-
-/* Add the columns to blocker_definitions */
-modifyColumn('task_time_blocker', 'ownerid', 'INT(10)', 'NOT NULL', '', '', '');
-modifyColumn('task_time_blocker', 'taskid', 'INT(10)', 'NOT NULL', '', '', '');
-modifyColumn('task_time_blocker', 'time', 'INT(12)', 'NOT NULL', '', '', '');
 
 
 
