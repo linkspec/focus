@@ -95,15 +95,28 @@ class blocker
         // Check this user owns this blocker
         if(!$this->userOwnsBlocker($blockerid)) { return false; }
 
-        
-
         // User owns blocker, map to the task
         $db = newMysqliObject();
         $user = new user();
         $userid = $user->getUserId();
+
+        // Check if this blocker is already mapped
+        $stmtCheckBlockerMapped = $db->prepare("SELECT `id` FROM task_blocker_map WHERE `taskid` = ? AND `blocker_definition_id` = ?");
+        $stmtCheckBlockerMapped->bind_param("ii", $taskid, $blockerid);
+        $stmtCheckBlockerMapped->execute();
+        $stmtCheckBlockerMapped->store_result();
+
+        // Test if we got a result
+        if(!$stmtCheckBlockerMapped->num_rows == '0') 
+        {
+            // Already mapped, return false
+            return false;
+        }
+
         $stmtInsertBlockerMapping = $db->prepare("INSERT INTO task_blocker_map (`taskid`, `blocker_definition_id`) VALUES (?,?)");
         $stmtInsertBlockerMapping->bind_param("ii", $taskid, $blockerid);
         $stmtInsertBlockerMapping->execute();
+        return true;
     }
 
     /**

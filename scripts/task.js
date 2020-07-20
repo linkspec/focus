@@ -96,6 +96,10 @@ class Task {
             parent.updateNote(document.getElementById("taskEditModalNotes").value);
             parent.updateDescription(document.getElementById("taskEditModalDescription").value);
 
+            // Save the updated requirements
+            parent.updateRequirements();
+
+            $('#taskEditModal').modal('hide')
         });
         
     }
@@ -366,6 +370,34 @@ class Task {
         });
     }
 
+    // Updates the requirements for this task if any have changed
+    updateRequirements()
+    {
+       
+        var parent = this;
+        // First check the existing requirements
+        const getRequirementsList = getAllRequirements();
+        getRequirementsList.then(function(result){
+            // Check if the current requirement status matches the existing requirements
+            result.forEach(requirement => {
+                // If status was not true, but now is, add the new requirement
+                if((document.getElementById("requriementsCheckbox" + requirement.id).checked == true) && (parent.blockers[requirement.id] != true))
+                {
+                    console.log("Add");
+                    fetch('api/blocker/?action=addBlockerToTask&blockerid=' + requirement.id + '&taskid=' + parent.id) // Request backend to add the requirement to this task
+                    parent.blockers[requirement.id] = true;
+                }
+
+                // If status was true, but now is not, remove the requirement
+                if((document.getElementById("requriementsCheckbox" + requirement.id).checked == false) && (parent.blockers[requirement.id] == true))
+                {
+                    console.log("remove");
+                    parent.blockers[requirement.id] = false;
+                    fetch('api/blocker/?action=removeBlockerFromTask&blockerid=' + requirement.id + '&taskid=' + parent.id) // Request backend to remove the requirement from this task
+                }
+            });
+        });
+    }
 
 
 }
