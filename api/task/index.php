@@ -44,6 +44,7 @@ if(isset($_GET['action']))
          $result['blockers'] = $task->getTaskBlockers();
          $result['description'] = $task->getTaskDescription();
          $result['notes'] = $task->getTaskNotes();
+         $result['requiredTasks'] = $task->getrequiredTasks();
 
          print_r(json_encode($result));
      }
@@ -107,7 +108,33 @@ if(isset($_GET['action']))
         $result['status'] = $task->updateDescription($_GET['newDescription']);
         echo json_encode($result);
      }
-     
+ 
+    // Assign a task as a requirement of another task
+    if($_GET['action'] == 'addTaskToTask')
+    {
+        $task = new task();
+        $task->setid($_GET['owningtask']);
+        $result['status'] = $task->addTaskToTask($_GET['requiredtask']);
+        echo json_encode($result);
+    }
+
+    // Remove a task as a requirement of another task
+    if($_GET['action'] == 'removeTaskFromTask')
+    {
+        $task = new task();
+        $task->setid($_GET['owningtask']);
+        $result['status'] = $task->removeTaskFromTask($_GET['requiredtask']);
+        echo json_encode($result);
+    }
+
+    // Lists required tasks for this task
+    if($_GET['action'] == 'listAllActiveTasks')
+    {
+        $task = new task();
+        $task->setid($_GET['taskid']);
+        $result = $task->listTasks('999', '1', 'id', 'DESC');
+        echo json_encode($result);
+    }
 
 }
 else

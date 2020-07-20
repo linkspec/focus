@@ -337,4 +337,90 @@ class task
         return $this->notes;
     }
 
+    /**
+     * Add one task as a requirement of another
+     */
+    public function addTaskToTask($requiredTaskId)
+    {
+        // Check we are not mapping a task to iteslf
+        if($this->taskid == $requiredTaskId) { return false; }
+
+        // Create a database connection
+        $db = newMysqliObject();
+        
+        // Make sure we have the current user
+        $user = new user();
+        $userid = $user->getUserId();
+
+        // Check if this is already mapped
+        $stmtCheckAlreadyMapped = $db->prepare("SELECT `id` FROM task_task_map WHERE `ownerid` = ? AND `owningtask` = ? AND `requiredtask` = ?");
+        $stmtCheckAlreadyMapped->bind_param("iii", $userid, $this->taskid, $requiredTaskId);
+        $stmtCheckAlreadyMapped->execute();
+        $stmtCheckAlreadyMapped->store_result();
+
+        // Test if we got a result
+        if(!$stmtCheckAlreadyMapped->num_rows == '0') 
+        {
+            // Already mapped, return false
+            return false;
+        }
+
+        $stmtInsertMapping = $db->prepare("INSERT INTO task_task_map (`ownerid`, `owningtask`, `requiredtask`) VALUES (?,?,?)");
+        $stmtInsertMapping->bind_param("iii", $userid, $this->taskid, $requiredTaskId);
+        $stmtInsertMapping->execute();
+        return true;
+
+    }
+
+    /**
+     * Add one task as a requirement of another
+     */
+    public function removeTaskFromTask($requiredTaskId)
+    {
+
+        // Create a database connection
+        $db = newMysqliObject();
+        
+        // Make sure we have the current user
+        $user = new user();
+        $userid = $user->getUserId();
+
+
+        $stmtRemoveMapping = $db->prepare("DELETE FROM task_task_map WHERE `ownerid` = ? AND `owningtask` = ? AND `requiredtask` = ?");
+        $stmtRemoveMapping->bind_param("iii", $userid, $this->taskid, $requiredTaskId);
+        $stmtRemoveMapping->execute();
+        return true;
+
+    }
+
+    /**
+     * Add one task as a requirement of another
+     */
+    public function getrequiredTasks()
+    {
+   
+
+        // Create a database connection
+        $db = newMysqliObject();
+        
+        // Make sure we have the current user
+        $user = new user();
+        $userid = $user->getUserId();
+
+        // Check if this is already mapped
+        $stmtQueryMapped = $db->prepare("SELECT `requiredtask` FROM task_task_map WHERE `ownerid` = ? AND `owningtask` = ?");
+        $stmtQueryMapped->bind_param("ii", $userid, $this->taskid);
+        $stmtQueryMapped->execute();
+        $stmtQueryMapped->bind_result($id);
+        $returnArray = array();
+        while ($stmtQueryMapped->fetch()) {
+            $returnArray[] = array('requiredtaskid' => $id);
+        }
+        return $returnArray;
+
+
+    }
+
+
+    
 }

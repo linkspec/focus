@@ -39,8 +39,22 @@ function getAllRequirements()
     });
     
     return promise;
+
+}
+
+// Fetches a list of all required tasks
+function getRequiredTasks()
+{
+    const promise = new Promise(function(resolve, reject){
+        fetch('api/blocker/?action=getRequiredTasks')
+        .then((resp) => resp.json())
+        .then(function(returnJson) {
+            resolve(returnJson);
+        });
+    });
     
-   
+    return promise;
+
 }
 
 // Adds a line to the blocker modal if it does not already exist

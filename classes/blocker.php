@@ -1,7 +1,12 @@
 <?php
 /**
-* Provides the blocker class
+* Provides the blocker functions and  class
 */
+
+
+
+
+
 
 /**
 * Manages individual blockers
@@ -10,7 +15,10 @@
 class blocker
 {
 
-
+    /**
+    * @var int The databaseid of this task
+    */
+    private $id;
 
     /**
      * Creates a new blocker
@@ -55,7 +63,7 @@ class blocker
         $userid = $user->getUserId();
 
 
-        // Add the new blocker to the database
+        // Fetch blockers from the database
         $db = newMysqliObject();
         $stmtFetchBlockers = $db->prepare("SELECT `id`,`name` FROM " . dbPrefix . "blocker_definitions WHERE `ownerid` = ?");
         $stmtFetchBlockers->bind_param("i", $userid);
@@ -170,7 +178,33 @@ class blocker
 
     }
 
-   
+   /**
+    * Fetches a list of tasks required by this task
+    */
+    public function getRequiredTasks()
+    {
+        $returnArray=array();
+        // Check the user is logged in
+        $user = new user();
+        if(!$user->isGoogleAuthed())
+        {
+            return false;
+        }
+        
+        $userid = $user->getUserId();
+
+
+        // Fetch blockers from the database
+        $db = newMysqliObject();
+        $stmtFetchRequiredTasks = $db->prepare("SELECT `requiredtask` FROM " . dbPrefix . "task_task_map WHERE `ownerid` = ? AND owningtask = ?");
+        $stmtFetchRequiredTasks->bind_param("ii", $userid, $this->id);
+        $stmtFetchRequiredTasks->execute();
+        $stmtFetchRequiredTasks->bind_result($id, $name);
+        while ($stmtFetchBlockers->fetch()) {
+            $returnArray[] = array('id' => $id, 'name' => $name);
+        }
+        return $returnArray;
+    }
 
 
 }

@@ -25,6 +25,13 @@ if(isset($_GET['action']))
             print_r($jsonEncodedResult);
         break;
 
+        case 'getRequiredTasks':
+            $blocker = new blocker();
+            $blocker->setId($_GET['id']);
+            $jsonEncodedResult = json_encode($blocker->getRequiredTasks());
+            print_r($jsonEncodedResult);
+        break;
+
         // Attach a blocker to a task
         case 'addBlockerToTask':
             // Check the blocker belongs to the user

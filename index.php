@@ -139,14 +139,9 @@ $authed = $user->isGoogleAuthed();
         </div>
 
 
-        <div class="form-check" id="taskEditModalRequirements">
-        
-      </div>
+        <div class="form-check" id="taskEditModalRequirements"></div>
 
-        <div class="form-group">
-          <label for="taskEditModalBlockingTasks">Required tasks</label>
-          <textarea class="form-control" id="taskEditModalBlockingTasks" rows="3"></textarea>
-        </div>
+        <div class="form-check" id="taskEditModalRequiredTasks"></div>
 
         <div class="form-group">
           <label for="taskEditModalTimeRequired">Time required</label>

@@ -1,3 +1,33 @@
+//--------------------------------------------------------------------------
+// This section contains functions that relate to tasks globally
+//--------------------------------------------------------------------------
+
+// Lists all of this users tasks that are not marked complete
+function listUsersActiveTasks()
+{
+    return new Promise(function(resolve, reject)
+    {
+        // Fetch a list of tasks
+        fetch('api/task/?action=getTaskIds')
+        .then(response => {
+            return response.json()
+        })
+        .then(data => {
+
+            resolve(data);
+
+        });
+        
+    });
+   
+}
+
+
+
+
+//--------------------------------------------------------------------------
+// The class is for individual tasks
+//--------------------------------------------------------------------------
 class Task {
     constructor(id) {
         this.id = id;
@@ -5,6 +35,7 @@ class Task {
         this.notes;
         this.blockers = [];
         this.promises = [];
+        this.requireTasks = [];
     }
 
     alertId()
@@ -56,7 +87,7 @@ class Task {
             // Update the modal with the current list of requirements
             var newRequirementList = '';
             // Create a blank area to start with
-            document.getElementById("taskEditModalRequirements").innerHTML = "";
+            document.getElementById("taskEditModalRequirements").innerHTML = "<b>Requirements</b>";
             // Now loop through the requirements adding each in turn
             result.forEach(requirement => {
                 
@@ -84,7 +115,41 @@ class Task {
             });
 
         });
+
+        // ### Build the 'tasks required by this task' section of the modal ### //
+        // Get a list of all active tasks
+        const getUsersActiveTasksList = listUsersActiveTasks();
+        getUsersActiveTasksList.then(function(tasks){
+            document.getElementById("taskEditModalRequiredTasks").innerHTML = "<b>Required tasks</b>";
+            tasks.forEach(taskid => {
+                // Don't show task under its own list
+                if(taskid != parent.id)
+                {
+                    var newFormgroup = document.createElement('div');
+                    newFormgroup.id = "requiredTaskFormGroup" + taskid;
+                    newFormgroup.className = "form-group";
+                    document.getElementById("taskEditModalRequiredTasks").appendChild(newFormgroup); // Append the form group to #taskEditModalRequirements on the main page
+
+                    // Create a new checkbox in that form group
+                    var newRequiredTaskCheckbox = document.createElement('input');
+                    newRequiredTaskCheckbox.id = "requiredTaskCheckbox"+taskid;
+                    newRequiredTaskCheckbox.className = "form-check-input";
+                    newRequiredTaskCheckbox.type = "checkbox";
+                    newRequiredTaskCheckbox.checked = parent.requireTasks[taskid]; // Check/Uncheck the checkbox as appropraite for this task
+                    document.getElementById("requiredTaskFormGroup" + taskid).appendChild(newRequiredTaskCheckbox); // Append it to the form group created above
+
+                    // Add a label for the check box
+                    var newRequiredTaskCheckboLabel = document.createElement('label');
+                    newRequiredTaskCheckboLabel.htmlFor = "requriementsCheckbox"+taskid;
+                    newRequiredTaskCheckboLabel.innerHTML = taskObjectArray[taskid].name;
+                    newRequiredTaskCheckboLabel.className = "form-check-label";
+                    document.getElementById("requiredTaskFormGroup" + taskid).appendChild(newRequiredTaskCheckboLabel); // Append it to the form group created above
+                }
+            });
+        });
+
         
+
 
         // Open the task modal    
         $('#taskEditModal').modal('show')
@@ -98,6 +163,8 @@ class Task {
 
             // Save the updated requirements
             parent.updateRequirements();
+            parent.updateRequiredTasks();
+
 
             $('#taskEditModal').modal('hide')
         });
@@ -298,6 +365,7 @@ class Task {
                     self.name = info.name;
                     self.description = info.description;
                     self.notes = info.notes;
+                
                     
                     // Check if any blockers are defined
                     if ( info.blockers !== null) {
@@ -305,12 +373,19 @@ class Task {
                         // Loop through the blockers that were returned for this task
                         info.blockers.forEach(function(blocker){
                            self.promises.push = self.updateBlockerCheckBoxes(blocker);
-                        });
-                                          
+                        }); 
+                    }
 
+                    // Check if any required tasks are defined
+                    if ( info.requiredTasks !== null) {
+
+                            info.requiredTasks.forEach(function(requiredTaskID){
+                                self.requireTasks[requiredTaskID.requiredtaskid] = true;
+                            });
                     }
 
                 })
+                    console.log(self);
                     resolve(); 
                 
                
@@ -394,6 +469,38 @@ class Task {
                     console.log("remove");
                     parent.blockers[requirement.id] = false;
                     fetch('api/blocker/?action=removeBlockerFromTask&blockerid=' + requirement.id + '&taskid=' + parent.id) // Request backend to remove the requirement from this task
+                }
+            });
+        });
+    }
+
+
+    // Updates the requirements for this task if any have changed
+    updateRequiredTasks()
+    {
+       
+        var parent = this;
+        console.log(parent.requireTasks);
+        // First check the existing requirements
+        const getRequirementsList = listUsersActiveTasks();
+        getRequirementsList.then(function(result){
+            // Check if the current requirement status matches the existing requirements
+            result.forEach(requirement => {
+               // console.log(requirement);
+                // If status was not true, but now is, add the new requirement
+                if((document.getElementById("requiredTaskCheckbox" + requirement).checked == true) && (parent.requireTasks[requirement] != true))
+                {
+                    console.log('api/task/?action=addTaskToTask&owningtask=' + parent.id + '&requiredtask=' + requirement);
+                    fetch('api/task/?action=addTaskToTask&owningtask=' + parent.id + '&requiredtask=' + requirement) // Request backend to add the requirement to this task
+                    parent.requireTasks[requirement] = true;
+                }
+
+                // If status was true, but now is not, remove the requirement
+                if((document.getElementById("requiredTaskCheckbox" + requirement).checked == false) && (parent.requireTasks[requirement] == true))
+                {
+                    console.log('api/task/?action=removeTaskFromTask&owningtask=' + parent.id + '&requiredtask=' + requirement);
+                    parent.requireTasks[requirement] = false;
+                    fetch('api/task/?action=removeTaskFromTask&owningtask=' + parent.id + '&requiredtask=' + requirement) // Request backend to add the requirement to this task
                 }
             });
         });
