@@ -116,6 +116,7 @@ function bindHandlers()
          $("#taskSearchBox").off();
          $("#taskSearchBox").keyup(function(){
             taskSearch(document.getElementById("taskSearchBox").value);
+            
         });
 
         //Bind to the new blocker text box
@@ -352,7 +353,8 @@ function taskSearch(searchValue)
     for (i = 0; i < tasks.length; i++) {
         // Check if this task matches the search
         id = tasks[i].id.replace("nameCol","");
-        if(!tasks[i].innerHTML.includes(searchValue))
+
+        if(!tasks[i].innerHTML.toLowerCase().includes(searchValue.toLowerCase()))
         {
             // Not found, hide this task
             $("#taskCollapseArea"+id).collapse('hide');
