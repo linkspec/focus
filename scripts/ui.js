@@ -190,9 +190,15 @@ function bindHandlers()
             addNewBlocker(document.getElementById('addNewBlocker').value);
             //saveTaskName(targetid, targetElement, document.getElementById('taskNameEdit' + targetid));
 
-         }
-           
+         }           
        });
+
+       // Binds the 'New blockers add button on the requirementns modal'
+       $("#addNewRequirement").off();
+       $("#addNewRequirement").click(function(){
+        // Save the new blocker to the database
+        addNewBlocker(document.getElementById('addNewBlocker').value);
+     });
 
        $("#showAllTasksButton").off();
        $("#showAllTasksButton").click(function(clickevent){
