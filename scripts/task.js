@@ -305,12 +305,6 @@ class Task {
             newRow.className = "row";
             document.getElementById("taskCollapseArea"+parent.id).appendChild(newRow);
             
-            // Create the drag button for the task
-            var newDragCol = document.createElement('div');
-            newDragCol.id = "dragCol"+parent.id;
-            newDragCol.className = "col-sm dragTask";
-            newDragCol.innerHTML = '<span class="oi" data-glyph="list"></span>';
-            document.getElementById("taskRow"+parent.id).appendChild(newDragCol);
 
             // Create a name column for the task
             var newNameCol = document.createElement('div');
@@ -318,25 +312,8 @@ class Task {
             newNameCol.className = "col-sm taskName";
             document.getElementById("taskRow"+parent.id).appendChild(newNameCol);
 
-            var newNameCol2 = document.createElement('div');
-            newNameCol2.id = "nameCol2"+parent.id;
-            newNameCol2.className = "col-sm";
-            newNameCol2.innerHTML = "test";
-            document.getElementById("taskRow"+parent.id).appendChild(newNameCol2);
-
-            // Create the blocker column
-            var newBlockerCol = document.createElement('div');
-            newBlockerCol.id = "blocker"+parent.id;
-            newBlockerCol.className = "col-sm blocker";
             
-            // Build the HTML into a variable (Mostly for readability)
-            var blockerDropDownMenuHTML = '<a class="btn btn-primary dropdown-toggle" href="#" role="button" id="blockerDropDownMenu' ;
-            blockerDropDownMenuHTML = blockerDropDownMenuHTML + parent.id ;
-            blockerDropDownMenuHTML = blockerDropDownMenuHTML +  '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Blockers</a>';
-            blockerDropDownMenuHTML = blockerDropDownMenuHTML + '<div class="dropdown-menu" aria-labelledby="blockerDropDownMenu' + parent.id + '">';
-            newBlockerCol.innerHTML = blockerDropDownMenuHTML + blockerHTML + '</div>';
-            $(newBlockerCol.querySelectorAll(".blockerCheckBox")).addClass("taskid" + parent.id );
-            document.getElementById("taskRow"+parent.id).appendChild(newBlockerCol);
+
             
             var newCompleteCol = document.createElement('div');
             newCompleteCol.id = "complete"+parent.id;
