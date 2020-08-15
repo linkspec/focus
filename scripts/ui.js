@@ -407,8 +407,8 @@ function newTaskBoxTextChange(taskName, key)
             }
             else
             {
-                var newTask = new Task(newTaskReturn.result);
-                newTask.addTask();
+                taskObjectArray[newTaskReturn.result] = new Task(newTaskReturn.result);
+                taskObjectArray[newTaskReturn.result].addTask();
                 $("#newTaskTextBox").val("");
             }
         });

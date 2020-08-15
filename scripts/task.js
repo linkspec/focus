@@ -58,7 +58,11 @@ class Task {
             // Now update the rows information
             this.fetchTaskInfo().then(()=>{
                 // Row is up to date, display it if hidden
-                this.showRow();
+                this.checkTaskVisibility();
+
+                // Update the click handler to include the new objects
+                bindClickHandlerToAll();
+
                 // Update the rows based on the current blockers
                 Promise.all(this.promises).then(() => {
                     this.blockersUpdated();  
