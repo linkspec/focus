@@ -4,6 +4,7 @@
 var blockerHTML = "";
 var taskObjectArray = [];
 var blockerArray = [];
+var showAll = false;
 // Build the page for the first time
 reBuildPage();
 
@@ -191,6 +192,20 @@ function bindHandlers()
 
          }
            
+       });
+
+       $("#showAllTasksButton").off();
+       $("#showAllTasksButton").click(function(clickevent){
+        if(showAll == false)
+        {
+            showAll = true
+        }
+        else
+        {
+            showAll = false
+        }
+
+        taskObjectArray.forEach(task => task.checkTaskVisibility());
        });
       
 }

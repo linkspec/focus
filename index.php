@@ -79,7 +79,16 @@ $authed = $user->isGoogleAuthed();
         <li class="page-item"><a class="page-link" href="#">3</a></li>
         <li class="page-item"><a class="page-link" href="#">Next</a></li>
       </ul>
+
+
+      <li class="nav-item">
+      <button type="button" id="showAllTasksButton" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
+        Show all tasks
+      </button>
+      </li>
     </ul>
+
+ 
     
     <form class="form-inline my-2 my-lg-0" id="newTaskTextForm">
       <input class="form-control mr-sm-2" type="search" placeholder="New task" aria-label="New task" id="newTaskTextBox">

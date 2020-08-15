@@ -174,6 +174,53 @@ class Task {
         
     }
 
+    // Check task visibility - This function is responsible for verifying if the task should or shouldn't be visible and showing/hiding the task as appropriate
+    checkTaskVisibility()
+    {
+        self = this;
+        // Firstly, check if 'showAll' is true - if so, it supercedes everything else
+        if(showAll == true)
+        {
+            self.showRow();
+            return;
+        }
+
+        // Set the default state to 'show', then check if there is a reason to hide it
+        var show = true;
+
+        // Check if a search is specified
+        if(document.getElementById("taskSearchBox").value != '')
+        {
+            // A search term exists. Set visibility based on match
+            if(!self.name.toLowerCase().includes(document.getElementById("taskSearchBox").value.toLowerCase()))
+            {
+                // Not found, hide this task
+                show = false;
+            }
+
+        }
+
+        // Check all requirements are met
+        if(self.checkRequirements() == false)
+        {
+            // Requirements are not all met, set 'show' to false so that it is hidden
+            show = false;
+        }
+
+
+
+        // Now show or hide the row based on the state of 'show'
+        if(show == true)
+        {
+            self.showRow();
+        }
+        else
+        {
+            self.hideRow();
+        }
+
+    }
+
     // When the task name has been changed, fetch the new name, save to database and update the name field
     saveTaskName(originalDiv, newTaskName)
     {
@@ -211,8 +258,9 @@ class Task {
         });
     }
 
-    // Function called when the blockers on the main menu have changed
-    blockersUpdated()
+    // Checks if all of the tasks requirements are met
+    // Returns true if met, false if not
+    checkRequirements()
     {
         self = this;
         var blocked = false;
@@ -232,11 +280,11 @@ class Task {
         // Show or hide the task depending on blocked state
         if(blocked == true)
         {
-            self.hideRow();
+            return false;
         }
         else
         {
-            self.showRow();
+            return true;
         }
     }
 
