@@ -51,9 +51,7 @@ function reBuildPage()
                 document.getElementById("mainBlockerDropDown").innerHTML = mainMenublockerHTML + newBlockerForm;
                 
             }).then(()=>{
-                console.log("Updating main menu")
                 mainMenuBlockerChange().then(()=>{
-                    console.log(blockerArray)
                     fetchTasks().then(()=>{
                     
                         // Bind any handlers needed

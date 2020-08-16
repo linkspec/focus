@@ -167,15 +167,20 @@ class Task {
             parent.updateDescription(document.getElementById("taskEditModalDescription").value);
 
             // Save the updated requirements
-            parent.updateRequirements();
-            parent.updateRequiredTasks();
-            parent.updateRequiredTime();
+            parent.updateRequirements().then(()=>{
+                console.log("updateRequirements");
+                parent.updateRequiredTasks().then(()=>{
+                    console.log("updateRequiredTasks");
+                    parent.updateRequiredTime().then(()=>{
+                        console.log("updateRequiredTime");
+                        parent.checkTaskVisibility();
+                        // Now that this has changed, checked the tasks visibility has changed
+                        $('#taskEditModal').modal('hide')
+                    });
+                });
+            });
+
            
-            // Now that this has changed, checked the tasks visibility has changed
-            parent.checkTaskVisibility();
-
-
-            $('#taskEditModal').modal('hide')
         });
         
     }
@@ -215,9 +220,6 @@ class Task {
             
         }
         
-
-        console.log("here");
-        console.log(show);
         // Now show or hide the row based on the state of 'show'
         if(show == true)
         {
@@ -281,7 +283,7 @@ class Task {
 
         blockerArray.forEach(function(blockerState, index){
         //self.blockers.forEach(function(blockerState, index){
-            console.log(self.blockers[index]);
+
             // Ensure that the blocker state of the task is set
             if(!self.blockers[index]) { self.blockers[index] = false; }
             if(!blockerstate) { var blockerstate = false; }
@@ -301,7 +303,7 @@ class Task {
     // Create a row on the page for the task
     createTaskRow()
     {
-        console.log("Starting function createTaskRow");
+
         var parent = this;
        
         return new Promise(function(resolve, reject)
@@ -362,10 +364,9 @@ class Task {
     // Hides the row
    hideRow()
    {
-      console.log("Starting function hide row");
+      
        var parent = this;
-       console.log("ISVISIBLE:")
-       console.log($("#taskCollapseArea"+parent.id).visible);
+      
        return new Promise(function(resolve, reject)
            {
                // Hide the tasks row
@@ -418,7 +419,7 @@ class Task {
                            self.promises.push = self.updateBlockerCheckBoxes(blocker);
                            self.blockers[blocker.blockerid] = true;
                         }); 
-                        console.log(self.blockers);
+
                     }
 
                     // Check if any required tasks are defined
@@ -492,30 +493,33 @@ class Task {
     // Updates the requirements for this task if any have changed
     updateRequirements()
     {
-       
         var parent = this;
-        // First check the existing requirements
-        const getRequirementsList = getAllRequirements();
-        getRequirementsList.then(function(result){
-            // Check if the current requirement status matches the existing requirements
-            result.forEach(requirement => {
-                // If status was not true, but now is, add the new requirement
-                if((document.getElementById("requriementsCheckbox" + requirement.id).checked == true) && (parent.blockers[requirement.id] != true))
-                {
-                    console.log("Add");
-                    fetch('api/blocker/?action=addBlockerToTask&blockerid=' + requirement.id + '&taskid=' + parent.id) // Request backend to add the requirement to this task
-                    parent.blockers[requirement.id] = true;
-                }
+        return new Promise(function(resolve, reject)
+            {
+           
+            // First check the existing requirements
+            const getRequirementsList = getAllRequirements();
+            getRequirementsList.then(function(result){
+                // Check if the current requirement status matches the existing requirements
+                result.forEach(requirement => {
+                    // If status was not true, but now is, add the new requirement
+                    if((document.getElementById("requriementsCheckbox" + requirement.id).checked == true) && (parent.blockers[requirement.id] != true))
+                    {
+                        fetch('api/blocker/?action=addBlockerToTask&blockerid=' + requirement.id + '&taskid=' + parent.id) // Request backend to add the requirement to this task
+                        parent.blockers[requirement.id] = true;
+                    }
 
-                // If status was true, but now is not, remove the requirement
-                if((document.getElementById("requriementsCheckbox" + requirement.id).checked == false) && (parent.blockers[requirement.id] == true))
-                {
-                    console.log("remove");
-                    parent.blockers[requirement.id] = false;
-                    fetch('api/blocker/?action=removeBlockerFromTask&blockerid=' + requirement.id + '&taskid=' + parent.id) // Request backend to remove the requirement from this task
-                }
-            });
+                    // If status was true, but now is not, remove the requirement
+                    if((document.getElementById("requriementsCheckbox" + requirement.id).checked == false) && (parent.blockers[requirement.id] == true))
+                    {
+                        parent.blockers[requirement.id] = false;
+                        fetch('api/blocker/?action=removeBlockerFromTask&blockerid=' + requirement.id + '&taskid=' + parent.id) // Request backend to remove the requirement from this task
+                    }
+                });
+                resolve(); 
         });
+        
+    });
     }
 
 
@@ -524,16 +528,16 @@ class Task {
     {
        
         var parent = this;
+        return new Promise(function(resolve, reject)
+        {
         // First check the existing requirements
         const getRequirementsList = listUsersActiveTasks();
         getRequirementsList.then(function(result){
             // Check if the current requirement status matches the existing requirements
             result.forEach(requirement => {
-               // console.log(requirement);
                 // If status was not true, but now is, add the new requirement
                 if((document.getElementById("requiredTaskCheckbox" + requirement).checked == true) && (parent.requireTasks[requirement] != true))
                 {
-                    console.log('api/task/?action=addTaskToTask&owningtask=' + parent.id + '&requiredtask=' + requirement);
                     fetch('api/task/?action=addTaskToTask&owningtask=' + parent.id + '&requiredtask=' + requirement) // Request backend to add the requirement to this task
                     parent.requireTasks[requirement] = true;
                 }
@@ -541,20 +545,28 @@ class Task {
                 // If status was true, but now is not, remove the requirement
                 if((document.getElementById("requiredTaskCheckbox" + requirement).checked == false) && (parent.requireTasks[requirement] == true))
                 {
-                    console.log('api/task/?action=removeTaskFromTask&owningtask=' + parent.id + '&requiredtask=' + requirement);
                     parent.requireTasks[requirement] = false;
                     fetch('api/task/?action=removeTaskFromTask&owningtask=' + parent.id + '&requiredtask=' + requirement) // Request backend to add the requirement to this task
                 }
+                });
             });
+            resolve();
         });
+    
     }
 
 
     updateRequiredTime()
     {
-        this.timeRequired = document.getElementById("taskEditModalTimeRequired").value;
-        fetch('api/task/?action=updateRequiredTime&taskid=' + this.id + '&requiredtime=' + document.getElementById("taskEditModalTimeRequired").value) // Request backend to update the required time of this task
+        var parent = this;
         
+        return new Promise(function(resolve, reject)
+        {
+            parent.timeRequired = document.getElementById("taskEditModalTimeRequired").value;
+        fetch('api/task/?action=updateRequiredTime&taskid=' + parent.id + '&requiredtime=' + document.getElementById("taskEditModalTimeRequired").value) // Request backend to update the required time of this task
+        resolve();
+         });
+    
     }
     
 
