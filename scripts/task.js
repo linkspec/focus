@@ -59,14 +59,13 @@ class Task {
             this.fetchTaskInfo().then(()=>{
                 // Row is up to date, display it if hidden
                 this.checkTaskVisibility();
-
                 // Update the click handler to include the new objects
                 bindClickHandlerToAll();
 
                 // Update the rows based on the current blockers
-                Promise.all(this.promises).then(() => {
+               /* Promise.all(this.promises).then(() => {
                     this.blockersUpdated();  
-                  });
+                  });*/
                 
                 //this.addClickHandler();
             })
@@ -171,6 +170,9 @@ class Task {
             parent.updateRequirements();
             parent.updateRequiredTasks();
             parent.updateRequiredTime();
+           
+            // Now that this has changed, checked the tasks visibility has changed
+            parent.checkTaskVisibility();
 
 
             $('#taskEditModal').modal('hide')
@@ -181,6 +183,7 @@ class Task {
     // Check task visibility - This function is responsible for verifying if the task should or shouldn't be visible and showing/hiding the task as appropriate
     checkTaskVisibility()
     {
+       
         self = this;
         // Firstly, check if 'showAll' is true - if so, it supercedes everything else
         if(showAll == true)
@@ -209,10 +212,12 @@ class Task {
         {
             // Requirements are not all met, set 'show' to false so that it is hidden
             show = false;
+            
         }
+        
 
-
-
+        console.log("here");
+        console.log(show);
         // Now show or hide the row based on the state of 'show'
         if(show == true)
         {
@@ -256,9 +261,13 @@ class Task {
             {
                 parent.createTaskRow().then(()=>{
                     resolve();
-                });;
+                });
             }
-            resolve();
+            else
+            {
+                // Area already exists, return promise and proceed
+                resolve();
+            }
         });
     }
 
@@ -266,35 +275,33 @@ class Task {
     // Returns true if met, false if not
     checkRequirements()
     {
+
         self = this;
-        var blocked = false;
+        var requirementsMet = true;
+
         blockerArray.forEach(function(blockerState, index){
-        
+        //self.blockers.forEach(function(blockerState, index){
+            console.log(self.blockers[index]);
             // Ensure that the blocker state of the task is set
             if(!self.blockers[index]) { self.blockers[index] = false; }
+            if(!blockerstate) { var blockerstate = false; }
             
-            // If the task blocker is true and the main blocker is false, the task is blocked
+            // If the task blocker is true and the main blocker is false, the requirement is not met
             if((self.blockers[index]==true) && (blockerState == false))    
             {
-                blocked = true;
+                requirementsMet = false;
             }
             
         });
         
-        // Show or hide the task depending on blocked state
-        if(blocked == true)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+
+        return requirementsMet;
     }
 
     // Create a row on the page for the task
     createTaskRow()
     {
+        console.log("Starting function createTaskRow");
         var parent = this;
        
         return new Promise(function(resolve, reject)
@@ -328,7 +335,7 @@ class Task {
 
             bindHandlers();
 
-            parent.showRow();
+  
             resolve();
         });
         
@@ -355,7 +362,10 @@ class Task {
     // Hides the row
    hideRow()
    {
+      console.log("Starting function hide row");
        var parent = this;
+       console.log("ISVISIBLE:")
+       console.log($("#taskCollapseArea"+parent.id).visible);
        return new Promise(function(resolve, reject)
            {
                // Hide the tasks row
@@ -406,7 +416,9 @@ class Task {
                         // Loop through the blockers that were returned for this task
                         info.blockers.forEach(function(blocker){
                            self.promises.push = self.updateBlockerCheckBoxes(blocker);
+                           self.blockers[blocker.blockerid] = true;
                         }); 
+                        console.log(self.blockers);
                     }
 
                     // Check if any required tasks are defined
@@ -416,10 +428,9 @@ class Task {
                                 self.requireTasks[requiredTaskID.requiredtaskid] = true;
                             });
                     }
-
-                })
-                    console.log(self);
                     resolve(); 
+                })
+                    
                 
                
             });
@@ -513,7 +524,6 @@ class Task {
     {
        
         var parent = this;
-        console.log(parent.requireTasks);
         // First check the existing requirements
         const getRequirementsList = listUsersActiveTasks();
         getRequirementsList.then(function(result){

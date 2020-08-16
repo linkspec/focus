@@ -51,11 +51,15 @@ function reBuildPage()
                 document.getElementById("mainBlockerDropDown").innerHTML = mainMenublockerHTML + newBlockerForm;
                 
             }).then(()=>{
-                fetchTasks().then(()=>{
+                console.log("Updating main menu")
+                mainMenuBlockerChange().then(()=>{
+                    console.log(blockerArray)
+                    fetchTasks().then(()=>{
                     
-                    // Bind any handlers needed
-                    bindHandlers();
-                    
+                        // Bind any handlers needed
+                        bindHandlers();
+                        
+                    });
                 });
             });
 
@@ -301,7 +305,6 @@ function fetchTasks()
 
             // Loop through the returned IDs
             data.forEach(taskId => {
-            
                 // Create a task object and request it be shown
                 taskObjectArray[taskId] = new Task(taskId);
                 taskObjectArray[taskId].addTask(taskId);
@@ -466,6 +469,7 @@ function blockerCheckBoxChange(clickEvent)
 
 function mainMenuBlockerChange(clickEvent)
 {
+    const promise = new Promise(function(resolve, reject){
     // Go through each blocker and save the current status to an array
     let blockerMenuByClass = [].slice.call(document.getElementsByClassName('mainMenublockerCheckBox'))
     blockerMenuByClass.forEach(function(blockerMenuitem){
@@ -478,8 +482,13 @@ function mainMenuBlockerChange(clickEvent)
     });
     // Have each task update based on the new status
     taskObjectArray.forEach(function(task){
-        task.blockersUpdated();
+        //task.blockersUpdated();
+        taskObjectArray.forEach(task => task.checkTaskVisibility());
     });
+    resolve();
+});
+    
+return promise;
 }
 
 

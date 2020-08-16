@@ -100,6 +100,7 @@ class blocker
      */
     public function attachToTask($blockerid, $taskid)
     {
+     
         // Check this user owns this blocker
         if(!$this->userOwnsBlocker($blockerid)) { return false; }
 
